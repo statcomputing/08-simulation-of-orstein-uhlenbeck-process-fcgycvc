@@ -1,0 +1,62 @@
+---
+title: "STAT_5361_Hw8_(3)"
+author: "Yicheng Guo"
+date: "2020/10/31"
+output: 
+  pdf_document: 
+    latex_engine: lualatex
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r echo = FALSE}
+RandomOUProcess <- function(init.val, a, b, sigma, delta, T, start = 0){
+  n <- floor((T - start) / delta)
+  process <- init.val
+  for(i in 1:n){
+    temp <- exp(-1 * a * delta)
+    new <- temp * process[i] + b*(1 - temp) + (sigma * sqrt(1-temp^2) * rnorm(1) / sqrt(2*a))
+    process <- append(process, new)
+  }
+  return(process)
+}
+```
+
+We set $a =1, \  b = 5, \ \sigma = 1$.
+
+```{r}
+RandomOUProcess_EulerMaruyama <- function(init.val, a, b, sigma, delta, T, start = 0){
+  n <- floor((T - start) / delta)
+  process <- init.val
+  for(i in 1:n){
+    new <- rnorm(1, mean = process[i] + a * (b - process[i]) * delta, 
+                 sd = sigma * delta)
+    process <- append(process, new)
+  }
+  return(process)
+}
+```
+
+```{r}
+realdensity <- delta1density <- delta0.5density <- delta0.1density <- delta0.01density <- rep(0, 1000)
+
+for (i in 1: 1000) {
+  realdensity[i] <- RandomOUProcess(1, 1, 5, 1, 1/500, 1)[501]
+  delta1density[i] <- RandomOUProcess_EulerMaruyama (1, 1, 5, 1, 1, 1)[2]
+  delta0.5density[i] <- RandomOUProcess_EulerMaruyama (1, 1, 5, 1, 0.5, 1)[3]
+  delta0.1density[i] <- RandomOUProcess_EulerMaruyama (1, 1, 5, 1, 0.1, 1)[11]
+  delta0.01density[i] <- RandomOUProcess_EulerMaruyama (1, 1, 5, 1, 0.01, 1)[101]
+}
+
+plot(density(realdensity), xlim = c(1, 6), ylim = c(0, 6.5))
+lines(density(delta1density), col = "red")
+lines(density(delta0.5density), col = "blue")
+lines(density(delta0.1density), col = "green")
+lines(density(delta0.01density), col = "purple")
+legend(1.5, 5, legend = c("realdensity", "delta=1 density", "delta=0.5 density", "delta=0.1density", 
+      "delta=0.01 density"), col = c("black", "red", "blue", "green", "purple"), cex = 1, lty = 1)
+```
+
+From the plot, we can see that $\delta =$ 0.5 or 0.1 are better simulation than $\delta =$ 1 or 0.01. $\delta =$0.5 has better simulation on variance, and $\delta =$0.1 has better simulation on mean.

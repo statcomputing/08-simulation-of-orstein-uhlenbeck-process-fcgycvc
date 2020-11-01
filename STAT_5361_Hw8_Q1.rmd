@@ -1,0 +1,48 @@
+---
+title: "STAT_5361_Hw8_(1)"
+author: "Yicheng Guo"
+date: "2020/10/31"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+By Ito's formula, let $H(t) = \int_0^t -adt = -at$,
+$$
+\begin{aligned}
+  & d[e^{-H(t)}r(t)] = e^{-H(t)}g(t)dt + e^{-H(t)}\sigma(t) dW(t), \\
+  & d[e^{at}r(t)] = e^{at}*ab*dt + e^{at}\sigma dW(t), \\
+  & r(t+\triangle) = e^{-a\triangle}r(t) + ab\int_t^{\triangle + t} (e^{as - at})ds +
+  \sigma \int_t^{\triangle + t} (e^{as - at})dW(s) \\
+  & = e^{-a\triangle}r(t) + b(1 - e^{-a\triangle}) + 
+  \sigma \int_0^{\triangle} (e^{as}) dW(s+t)
+\end{aligned}
+$$
+
+Finally, we need to prove that
+
+$$
+\begin{aligned}
+& \sigma \int_0^{\triangle} (e^{as}) dW(s+t) = \sigma \int_0^{\triangle} (e^{as}) dW(s) = \frac{\sigma}{\sqrt{2a}}
+\sqrt{1 - e^{-2a\triangle}} Z
+\end{aligned}
+$$
+
+By Ito's isometry, 
+
+$$
+  E[(\int_0^\triangle e^{as} dW(s))^2] = \int_0^\triangle (e^{as})^2 ds = \frac{1 - e^{-2a\triangle}}{2a}
+$$
+
+Therefore
+
+$$
+  (\int_0^\triangle e^{as} dW(s))^2 \sim \frac{1 - e^{-2a\triangle}}{2a} \chi^2_{(1)},
+$$
+$$
+    \int_0^\triangle e^{as} dW(s) \sim \sqrt{\frac{1 - e^{-2a\triangle}}{2a}} Z.
+$$
+
+which complete the proof.

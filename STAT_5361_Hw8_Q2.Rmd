@@ -1,0 +1,84 @@
+---
+title: "STAT_5361_Hw8_(2)"
+author: "Yicheng Guo"
+date: "2020/10/31"
+output:
+  pdf_document:
+    latex_engine: xelatex
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+RandomOUProcess <- function(init.val, a, b, sigma, delta, T, start = 0){
+  n <- floor((T - start) / delta)
+  process <- init.val
+  for(i in 1:n){
+    temp <- exp(-1 * a * delta)
+    new <- temp * process[i] + b*(1 - temp) + (sigma * sqrt(1-temp^2) * rnorm(1) / sqrt(2*a))
+    process <- append(process, new)
+  }
+  return(process)
+}
+```
+
+Because data generation take too much time on my laptop, I have to do it one by one to make sure each code is correct, and only do 3 pairs of comparison.
+
+```{r}
+T <- seq(0, 500, 1/500)
+
+Data_01 <- RandomOUProcess(1, 5, 5, 0.5, 1/500, 500)
+#Data_02 <- RandomOUProcess(1, 1, 5, 0.5, 1/500, 500)
+#Data_03 <- RandomOUProcess(1, 0.1, 5, 0.5, 1/500, 500)
+#Data_04 <- RandomOUProcess(1, 5, -5, 0.5, 1/500, 500)
+#Data_05 <- RandomOUProcess(1, 1, -5, 0.5, 1/500, 500)
+#Data_06 <- RandomOUProcess(1, 0.1, -5, 0.5, 1/500, 500)
+#Data_07 <- RandomOUProcess(1, 5, 5, 0.2, 1/500, 500)
+#Data_08 <- RandomOUProcess(1, 1, 5, 0.2, 1/500, 500)
+#Data_09 <- RandomOUProcess(1, 0.1, 5, 0.2, 1/500, 500)
+#Data_10 <- RandomOUProcess(1, 5, -5, 0.2, 1/500, 500)
+#Data_11 <- RandomOUProcess(1, 1, -5, 0.2, 1/500, 500)
+#Data_12 <- RandomOUProcess(1, 0.1, -5, 0.2, 1/500, 500)
+#Data_13 <- RandomOUProcess(1, 5, 5, 0.1, 1/500, 500)
+#Data_14 <- RandomOUProcess(1, 1, 5, 0.1, 1/500, 500)
+#Data_15 <- RandomOUProcess(1, 0.1, 5, 0.1, 1/500, 500)
+#Data_16 <- RandomOUProcess(1, 5, -5, 0.1, 1/500, 500)
+#Data_17 <- RandomOUProcess(1, 1, -5, 0.1, 1/500, 500)
+#Data_18 <- RandomOUProcess(1, 0.1, -5, 0.1, 1/500, 500)
+```
+
+```{r}
+plot(T, Data_01, main = "b = 5, sigma = 0.5",  type = "l", ylab = "Data", col = "blue", ylim = c(1, 8), lwd = 0.1)
+Data_02 <- RandomOUProcess(1, 1, 5, 0.5, 1/500, 500)
+Data_03 <- RandomOUProcess(1, 0.1, 5, 0.5, 1/500, 500)
+lines(T, Data_02, col = "red", lwd = 0.1)
+lines(T, Data_03, col = "green", lwd = 0.1)
+legend(1, 8, legend = c("a = 5", "a = 1", "a = 0.1"), col = c("blue", "red", "green"), 
+       cex = 1, lty = 1, bg = "transparent")
+```
+
+```{r}
+Data_04 <- RandomOUProcess(1, 5, -5, 0.5, 1/500, 500)
+
+plot(T, Data_01, main = "a = 5, sigma = 0.5", type = "l", ylab = "Data", ylim = c(-6, 8), lwd = 0.1)
+lines(T, Data_04, col = "red", lwd = 0.1)
+```
+
+
+```{r}
+Data_07 <- RandomOUProcess(1, 5, 5, 0.2, 1/500, 500)
+Data_13 <- RandomOUProcess(1, 5, 5, 0.1, 1/500, 500)
+
+plot(T, Data_01, main = "a = b = 5", ylab = "Data", type = "l", col = "blue", ylim = c(4, 7), lwd = 0.1)
+lines(T, Data_07, col = "red", lwd = 0.1)
+lines(T, Data_13, col = "green", lwd = 0.1)
+legend(1, 6, legend = c("sigma = 0.5", "sigma = 0.2", "sigma = 0.1"), col = c("blue", "red", "green"), 
+       cex = 1, lty = 1, bg = "transparent")
+```
+
+
+From the plot, we can see that as a increase, vibration decrease; as sigma increase, vibration increase. 

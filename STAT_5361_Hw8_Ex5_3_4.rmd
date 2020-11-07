@@ -1,0 +1,66 @@
+---
+title: "STAT 5361 Ex.5.3.4"
+author: "Yicheng Guo"
+date: "2020/11/7"
+output: 
+  pdf_document: 
+    latex_engine: xelatex
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## (1)
+Using https://zh.numberempire.com/integralcalculator.php to calculate indefinite integral, we have 
+$$
+\begin{aligned}
+& Z(t) = \int_0^t \lambda(x) dx = 
+ \frac{2}{3}\sqrt{x^3} -e^{-x} \frac{sin(2\pi x) + 2\pi cos(2\pi x)} {(2\pi)^2 + 1}|_{x=0}^t \\
+& = \frac{2}{3}\sqrt{t^3} - [e^{-t} \frac{sin(2\pi t) + 2\pi cos(2\pi t)} {(2\pi)^2 + 1} - 
+e^{-0} \frac{sin(2\pi 0) + 2\pi cos(2\pi 0)} {(2\pi)^2 + 1}] \\
+& = \frac{2}{3}\sqrt{t^3} - [e^{-t} \frac{sin(2\pi t) + 2\pi cos(2\pi t)} {(2\pi)^2 + 1} - 
+e^{-0} \frac{sin(2\pi 0) + 2\pi cos(2\pi 0)} {(2\pi)^2 + 1}] \\
+& = \frac{2}{3}\sqrt{t^3} - [e^{-t} \frac{sin(2\pi t) + 2\pi cos(2\pi t)} {(2\pi)^2 + 1} - 
+\frac{2\pi} {(2\pi)^2 + 1}]
+\end{aligned}
+$$
+$N(5) \sim Poisson(Z(5))$.
+
+## (2)
+```{r}
+#lambda(t)
+f_lambda_t <- function(t) sqrt(t) + exp(-1 * t) * sin(2 * pi * t)
+
+#Z(t)
+Z <- function(t){
+  k <- 2 * pi; tempt <- k*t
+  2 * sqrt(t^3)/3 + (exp(-1 * t) * (sin(tempt) + k*cos(tempt)) - k) / (k^2 + 1)
+}
+
+#Random_NonHomogeneous_PoissonProcess is the result we get.
+Random_NonHomogeneous_PoissonProcess <- function(t){
+  fZval <- Z(t)
+  N <- rpois(1, fZval)
+  temp_vector <- runif(N, 0, t)
+  u <- runif(N)
+  x <- f_lambda_t(temp_vector)/fZval
+  return(sort(x))
+}
+```
+
+## (3)
+```{r}
+#each time the sample sizes are different.
+#replicate list situation in each replication in list form, so use unlist to mix all the samples
+set.seed(534)
+sampleHw8P2 <- unlist(replicate(1000, Random_NonHomogeneous_PoissonProcess(5)))
+
+xtemp <- seq(0, 5, 0.01)
+fZval <- Z(5)
+ytemp <- f_lambda_t(xtemp)/fZval
+ytemp
+plot(density(sampleHw8P2))
+lines(density(ytemp), col = "red")
+legend(0, 6, legend = c("sample density", "real density"), col = c("black", "red"), cex = 1, lty = 1)
+```
